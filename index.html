@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#005A36">
+    <title>High-Protein &amp; High-Fibre Meal Planner</title>
+    
+    <!-- Embedded Web App Manifest via Base64 Data URI -->
+    <link rel="manifest" href="data:application/json;base64,eyAibmFtZSI6ICJDaGVja2VycyBNZWFsIFBsYW5uZXIiLCAic2hvcnRfbmFtZSI6ICJNZWFsIFBsYW5uZXIiLCAic3RhcnRfdXJsIjogIi4iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzAwNUEzNiIsICJ0aGVtZV9jb2xvciI6ICIjMDA1QTM2IiwgImljb25zIjogWyB7ICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO3V0ZjgsPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJz48cmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgcng9JzEwMCcgZmlsbD0nJTIzMDA1QTM2Jy8+PHRleHQgeD0nMjU2JyB5PSczMjAnIGZvbnQtc2l6ZT0nMjAwJyBmaWxsPSd3aGl0ZScgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtd2VpZ2h0PSdib2xkJz5DUCFlag8vdGV4dD48L3N2Zz4iLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiIH0gXSB9" />
+
+    <style>
+        :root {
+            --primary-color: #005A36; /* Checkers Green */
+            --accent-color: #D35400; /* Rich Orange */
+            --bg-color: #F5F7F6;
+            --card-bg: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-muted: #7F8C8D;
+            --border-color: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        header p {
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .intro-box {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .intro-box h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media(min-width: 768px) {
+            .grid-layout {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(min-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .day-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            border-top: 4px solid var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .day-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .meal-section {
+            margin-bottom: 1.2rem;
+        }
+
+        .meal-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            margin: 0;
+        }
+
+        .meal-content {
+            margin: 0.2rem 0 0.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .toddler-note {
+            background-color: #FFF3CD;
+            border-left: 3px solid #FFC107;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            margin-top: 0.3rem;
+        }
+
+        .highlight-badge {
+            display: inline-block;
+            background-color: #EBF5FB;
+            color: #2980B9;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Shopping List Section */
+        .shopping-list-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .shopping-list-section h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .shopping-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media(min-width: 768px) {
+            .shopping-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(min-width: 1024px) {
+            .shopping-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .category-box h3 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+
+        .shopping-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .shopping-list li {
+            padding: 0.4rem 0;
+            display: flex;
+            align-items: flex-start;
+            font-size: 0.9rem;
+        }
+
+        .shopping-list input[type="checkbox"] {
+            margin-right: 0.7rem;
+            margin-top: 0.2rem;
+            cursor: pointer;
+        }
+
+        .shopping-list input[type="checkbox"]:checked + span {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background-color: #eaeeed;
+            margin-top: 4rem;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                color: #000000;
+            }
+            .day-card {
+                page-break-inside: avoid;
+                border: 1px solid #ccc;
+                box-shadow: none;
+                margin-bottom: 1cm;
+            }
+            .shopping-list-section {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>High-Protein &amp; High-Fibre Meal Planner</h1>
+        <p>No Bread (Except with Soup) | 3 Adults &amp; 1 Toddler (2yo)</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="intro-box">
+            <h2>Nutritional Priorities</h2>
+            <p>This revised plan maximizes dietary fibre and protein while removing standard bread from everyday breakfasts and lunches. Standard grains are replaced with high-fibre alternatives like <strong>Simple Truth Rolled Oats</strong>, <strong>Spekko Brown Rice</strong>, sweet potatoes, and legumes. <strong>Lancewood High-Protein/Double Cream Plain Yogurt</strong> and fresh eggs boost protein, while the 2-year-old child benefits from softer prep options and <strong>Oh My Goodness!</strong> whole-food snacks.</p>
+        </div>
+
+        <!-- 7-Day Grid -->
+        <div class="grid-layout">
+            
+            <!-- Day 1 -->
+            <div class="day-card">
+                <h3 class="day-title">Monday</h3>
+                <div class="meal-section">
+                    <p class="meal-label">Breakfast</p>
+                    <p class="meal-content"><strong>Simple Truth Rolled Oats</strong> prepared with full cream milk, mixed with 1 tbsp of chia seeds and topped with banana slices.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Mash the banana and stir well. Chia seeds soften perfectly in hot oats, making them easy to digest.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Lunch</p>
+                    <p class="meal-content">Rotisserie Chicken Salad: Shredded <strong>Checkers Deli Chicken</strong>, canned <strong>Simple Truth Chickpeas</strong> (rinsed), baby spinach, and sliced cucumber tossed in a light olive oil dressing.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Chop chicken finely, slightly mash the chickpeas, and serve with soft cucumber slices on the side.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Dinner</p>
+                    <p class="meal-content">Roasted chicken pieces (breasts/thighs) served with roasted sweet potato wedges (high fibre) and steamed broccoli florets.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Chop the chicken, remove the tough sweet potato skin, and mash the flesh with a fork alongside tender broccoli tops.</div>
+                </div>
+            </div>
+
+            <!-- Day 2 -->
+            <div class="day-card">
+                <h3 class="day-title">Tuesday</h3>
+                <div class="meal-section">
+                    <p class="meal-label">Breakfast</p>
+                    <p class="meal-content">Scrambled <strong>Simple Truth Free-Range Eggs</strong> cooked in butter, served with a side of sliced avocado and sliced cherry tomatoes.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Mash the avocado slightly. Cut cherry tomatoes into quarters to eliminate choking hazards.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Lunch</p>
+                    <p class="meal-content">Leftover chicken, roasted sweet potato wedges, and cold broccoli florets.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> A balanced, self-feeding finger-food meal for the midday routine.</div>
+                </div>
+                <div class="meal-section">
+                    <span class="highlight-badge">30-MIN MEAL</span>
+                    <p class="meal-label">Dinner (Supper)</p>
+                    <p class="meal-content"><strong>Quick Mince &amp; Veggie Skillet:</strong> Lean beef mince browned with onion, garlic, canned black beans (rinsed), and frozen mixed vegetables. Served over quick-cook <strong>Spekko Brown Rice</strong>.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Ground beef is soft and easy to chew. Combine the mince, soft rice, and well-cooked vegetables into a moist bowl.</div>
+                </div>
+            </div>
+
+            <!-- Day 3 -->
+            <div class="day-card">
+                <h3 class="day-title">Wednesday</h3>
+                <div class="meal-section">
+                    <p class="meal-label">Breakfast</p>
+                    <p class="meal-content">High-Protein breakfast bowl: <strong>Lancewood Double Cream Plain Yogurt</strong> topped with a handful of raw rolled oats, pumpkin seeds, and a drizzle of <strong>Simple Truth Raw Honey</strong>.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Stir the oats and honey thoroughly into the yogurt to soften. Skip the whole pumpkin seeds for the toddler (choking hazard).</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Lunch</p>
+                    <p class="meal-content">Leftover Mince, Bean, &amp; Veggie Skillet with Brown Rice.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Reheats quickly and provides a robust source of protein and dietary fibre.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Dinner</p>
+                    <p class="meal-content">Mild Chicken &amp; Lentil Curry: Chicken breast diced and simmered with a mild curry paste, carrots, and canned brown lentils. Served with Brown Rice.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Lentils are highly nutritious and naturally soft when cooked into the curry. Mash with rice.</div>
+                </div>
+            </div>
+
+            <!-- Day 4 -->
+            <div class="day-card">
+                <h3 class="day-title">Thursday</h3>
+                <div class="meal-section">
+                    <p class="meal-label">Breakfast</p>
+                    <p class="meal-content">Warm Rolled Oats cooked with grated red apple, cinnamon, and a spoonful of <strong>Simple Truth Smooth Peanut Butter</strong>.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Apple gratings melt into the oats when cooked. Peanut butter adds protein and essential healthy fats.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Lunch</p>
+                    <p class="meal-content">Leftover Mild Chicken &amp; Lentil Curry with Brown Rice.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Ensure the curry is moist; add a splash of warm water or milk when reheating if too dry.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Dinner</p>
+                    <p class="meal-content">Grilled bunless beef patties (made from <strong>Checkers Fresh Beef Patties</strong>) topped with melted Cheddar, served alongside a leafy green salad with sliced avocado.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Serve small, bite-sized pieces of patty topped with cheese, alongside soft avocado cubes.</div>
+                </div>
+            </div>
+
+            <!-- Day 5 -->
+            <div class="day-card">
+                <h3 class="day-title">Friday</h3>
+                <div class="meal-section">
+                    <p class="meal-label">Breakfast</p>
+                    <p class="meal-content">Baked Egg Muffins: Eggs whisked with chopped spinach, chopped ham, and grated Cheddar, baked in a muffin tin.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Soft, bouncy, and highly portable. Perfect for toddler self-feeding.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Lunch</p>
+                    <p class="meal-content">Loaded Sweet Potatoes: Halved sweet potatoes baked and stuffed with canned shredded tuna mixed with a little mayonnaise and sweetcorn.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Mash the sweet potato flesh together with the tuna and sweetcorn for an easily swallowed meal.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Dinner</p>
+                    <p class="meal-content">Baked <strong>Sea Harvest Hake Fillets</strong>, served with a side of warm buttered baby potatoes and steamed peas.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Flake the hake carefully to ensure no bones are present. Mash baby potatoes and mix with peas.</div>
+                </div>
+            </div>
+
+            <!-- Day 6 -->
+            <div class="day-card">
+                <h3 class="day-title">Saturday</h3>
+                <div class="meal-section">
+                    <p class="meal-label">Breakfast</p>
+                    <p class="meal-content">Banana &amp; Oat Pancakes: Flapjacks made by blending 2 eggs, 1 ripe banana, and half a cup of rolled oats (no flour, no added sugar).</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Naturally sweet and high in fibre. Serve cut into small strips.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Lunch</p>
+                    <p class="meal-content">Tuna, egg, and bean salad: Shredded tuna, hard-boiled eggs, canned chickpeas, baby spinach, and tomatoes tossed together.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Serve chopped egg, tuna, and slightly crushed chickpeas on a plate separately.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Dinner</p>
+                    <p class="meal-content">Traditional Braai: Grilled <strong>Checkers Championship Boerewors</strong>, served alongside a warm, high-protein Three-Bean Salad (mildly dressed with olive oil and herbs).</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Finely chop the boerewors (remove casing). Lightly mash the canned beans from the salad for easier chewing.</div>
+                </div>
+            </div>
+
+            <!-- Day 7 -->
+            <div class="day-card">
+                <h3 class="day-title">Sunday</h3>
+                <div class="meal-section">
+                    <p class="meal-label">Breakfast</p>
+                    <p class="meal-content">Omelette cooked with sliced mushrooms, spinach, and grated <strong>Lancewood Cheddar</strong>.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Chop mushrooms and spinach extremely fine before cooking so they blend smoothly into the egg.</div>
+                </div>
+                <div class="meal-section">
+                    <p class="meal-label">Lunch</p>
+                    <p class="meal-content">Spelt Macaroni Salad: Leftover boiled <strong>Simple Truth Spelt Macaroni</strong> tossed with diced chicken breasts, cherry tomatoes, and peas.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Spelt is highly fibrous and has a nutty flavour. Ensure tomatoes are quartered.</div>
+                </div>
+                <div class="meal-section">
+                    <span class="highlight-badge">BREAD ALLOWED</span>
+                    <p class="meal-label">Dinner</p>
+                    <p class="meal-content">Thick, warm Butternut &amp; Red Lentil Soup (high protein and fibre), served with toasted <strong>Sasko Premium Bread</strong> for dipping.</p>
+                    <div class="toddler-note"><strong>Toddler Note:</strong> Offer toasted bread "soldiers" to dip in the soup. Lentils blended into the soup provide smooth texture and high fibre.</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Checkers Shopping List -->
+        <div class="shopping-list-section">
+            <h2>Checkers Shopping List</h2>
+            <p style="margin-top: 0; color: var(--text-muted);">Optimized for 3 adults and 1 toddler. Features high-fibre, high-protein, and bread-restricted items.</p>
+            
+            <div class="shopping-grid">
+                
+                <!-- Produce -->
+                <div class="category-box">
+                    <h3>Fresh Produce</h3>
+                    <ul class="shopping-list">
+                        <li><input type="checkbox"> <span>1x Bag of Butternut (approx 1kg)</span></li>
+                        <li><input type="checkbox"> <span>1x Bag of Baby Potatoes (1kg)</span></li>
+                        <li><input type="checkbox"> <span>1x Bag of Sweet Potatoes (1kg)</span></li>
+                        <li><input type="checkbox"> <span>1x Bag of Carrots (1kg)</span></li>
+                        <li><input type="checkbox"> <span>1x Head of Fresh Broccoli</span></li>
+                        <li><input type="checkbox"> <span>1x Bag of Baby Spinach (300g)</span></li>
+                        <li><input type="checkbox"> <span>1x Punnet of White Button Mushrooms</span></li>
+                        <li><input type="checkbox"> <span>1x Punnet of Cherry Tomatoes</span></li>
+                        <li><input type="checkbox"> <span>1x English Cucumber</span></li>
+                        <li><input type="checkbox"> <span>1x Bag of Bananas</span></li>
+                        <li><input type="checkbox"> <span>1x Bag of Apples</span></li>
+                        <li><input type="checkbox"> <span>3x Ripening Avocados</span></li>
+                    </ul>
+                </div>
+
+                <!-- Meat, Seafood & Deli -->
+                <div class="category-box">
+                    <h3>Butchery, Seafood &amp; Deli</h3>
+                    <ul class="shopping-list">
+                        <li><input type="checkbox"> <span>1x Checkers Deli Rotisserie Chicken (Hot/Ready)</span></li>
+                        <li><input type="checkbox"> <span>1x Pack Checkers Championship Boerewors (approx. 800g)</span></li>
+                        <li><input type="checkbox"> <span>1kg Lean Beef Mince</span></li>
+                        <li><input type="checkbox"> <span>1.5kg Fresh Chicken Breasts / Thighs</span></li>
+                        <li><input type="checkbox"> <span>1x Box Frozen Sea Harvest Hake Fillets (800g)</span></li>
+                        <li><input type="checkbox"> <span>1x Pack Sandwich Ham / Chicken Breast Cold Cuts</span></li>
+                    </ul>
+                </div>
+
+                <!-- Bakery, Dairy & Eggs -->
+                <div class="category-box">
+                    <h3>Dairy, Eggs &amp; Bakery</h3>
+                    <ul class="shopping-list">
+                        <li><input type="checkbox"> <span>1x Loaf Sasko Premium White/Brown Bread (for Sunday soup only)</span></li>
+                        <li><input type="checkbox"> <span>2x Simple Truth Free-Range Eggs (18-packs)</span></li>
+                        <li><input type="checkbox"> <span>6x 1L Clover Full Cream Milk (or Simple Truth Long Life)</span></li>
+                        <li><input type="checkbox"> <span>1x Tub Lancewood Double Cream Plain Yogurt (1kg)</span></li>
+                        <li><input type="checkbox"> <span>1x Block Lancewood Cheddar Cheese (600g)</span></li>
+                        <li><input type="checkbox"> <span>1x Salted Butter (500g)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Pantry Grains & Beans (High Fibre) -->
+                <div class="category-box">
+                    <h3>High-Fibre Pantry &amp; Grains</h3>
+                    <ul class="shopping-list">
+                        <li><input type="checkbox"> <span>1x Simple Truth Rolled Oats (1kg)</span></li>
+                        <li><input type="checkbox"> <span>1x Spekko Brown Rice (2kg) (Higher fibre than white)</span></li>
+                        <li><input type="checkbox"> <span>1x Simple Truth Spelt Macaroni (500g)</span></li>
+                        <li><input type="checkbox"> <span>2x Canned Chickpeas (400g)</span></li>
+                        <li><input type="checkbox"> <span>1x Canned Brown Lentils (400g)</span></li>
+                        <li><input type="checkbox"> <span>1x Canned Black Beans or Kidney Beans (400g)</span></li>
+                        <li><input type="checkbox"> <span>1x Pack Dry Red Lentils (500g - for Sunday soup)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Pantry Staples & Seeds -->
+                <div class="category-box">
+                    <h3>Pantry Staples &amp; Seeds</h3>
+                    <ul class="shopping-list">
+                        <li><input type="checkbox"> <span>1x Pack Chia Seeds (Simple Truth)</span></li>
+                        <li><input type="checkbox"> <span>1x Pack Pumpkin Seeds (Simple Truth)</span></li>
+                        <li><input type="checkbox"> <span>2x Canned Shredded Tuna in Brine</span></li>
+                        <li><input type="checkbox"> <span>1x Can Sweetcorn (whole kernel)</span></li>
+                        <li><input type="checkbox"> <span>1x Simple Truth Smooth Peanut Butter</span></li>
+                        <li><input type="checkbox"> <span>1x Simple Truth Raw Honey</span></li>
+                        <li><input type="checkbox"> <span>Olive Oil &amp; Mayonnaise</span></li>
+                        <li><input type="checkbox"> <span>Mild Curry Paste or Mild Curry Powder</span></li>
+                    </ul>
+                </div>
+
+                <!-- Kids Snacks -->
+                <div class="category-box">
+                    <h3>Kids &amp; Toddler Snacks</h3>
+                    <ul class="shopping-list">
+                        <li><input type="checkbox"> <span>1x Pack Oh My Goodness! Berry Burst Nibbles</span></li>
+                        <li><input type="checkbox"> <span>1x Pack Oh My Goodness! Apple &amp; Cashew Snack Bars</span></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>Ensure all warm meals are cooled to room temperature, and food textures are mashed or chopped appropriately to ensure safe consumption for the toddler.</p>
+    </div>
+
+    <!-- PWA & Persistent State Script -->
+    <script>
+        // Checkbox State Persistence (Save to browser memory)
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('.shopping-list input[type="checkbox"]');
+            
+            // Load saved states
+            checkboxes.forEach((cb, index) => {
+                const savedState = localStorage.getItem(`item-${index}`);
+                if (savedState === 'true') {
+                    cb.checked = true;
+                }
+                
+                // Save state changes
+                cb.addEventListener('change', () => {
+                    localStorage.setItem(`item-${index}`, cb.checked);
+                });
+            });
+        });
+
+        // Register Service Worker for offline app capability
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered scope:', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
